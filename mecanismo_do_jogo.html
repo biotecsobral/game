@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL SEGURO INPI - PATENT DNA</title>
+    <style>
+        /* Paleta de Cores baseada na Logo */
+        :root {
+            --bg-dark: #030613; /* Fundo azul escuro profundo da logo */
+            --bg-panel: #0a1128; /* Fundo dos painéis */
+            --green-neon: #39ff14; /* Verde vibrante */
+            --blue-neon: #0088ff; /* Azul vibrante */
+            --purple-neon: #8a2be2; /* Roxo vibrante */
+            --text-light: #e0e0e0;
+            --danger: #ff3333;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 136, 255, 0.05) 0%, transparent 60%),
+                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8));
+        }
+
+        #terminal-container {
+            background-color: var(--bg-panel);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, var(--green-neon), var(--blue-neon), var(--purple-neon)) 1;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(0, 136, 255, 0.15);
+            position: relative;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            max-height: 150px;
+            object-fit: contain;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin-top: 0;
+            letter-spacing: 1px;
+        }
+
+        h1 { 
+            font-size: 2.2em; 
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--green-neon), var(--blue-neon));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        h2 { 
+            font-size: 1.2em; 
+            color: var(--text-light); 
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+        }
+
+        h3 {
+            color: var(--blue-neon);
+            text-shadow: 0 0 5px rgba(0, 136, 255, 0.5);
+            margin-bottom: 15px;
+        }
+        
+        .status-danger {
+            color: var(--danger);
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.6);
+            margin-bottom: 25px;
+            padding: 10px;
+            border: 1px dashed var(--danger);
+            background-color: rgba(255, 51, 51, 0.05);
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .fase {
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        p {
+            font-size: 1.05em;
+            line-height: 1.6;
+            color: #b0c4de;
+        }
+
+        .instrucao::before {
+            content: "> ";
+            color: var(--green-neon);
+            font-weight: bold;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            background-color: rgba(3, 6, 19, 0.8);
+            color: var(--green-neon);
+            border: 1px solid var(--blue-neon);
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--green-neon);
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+            background-color: #000;
+        }
+
+        input::placeholder {
+            color: rgba(57, 255, 20, 0.3);
+        }
+
+        button {
+            width: 100%;
+            background: linear-gradient(90deg, #1a8c0d, #0055a4);
+            color: #fff;
+            border: 1px solid var(--blue-neon);
+            padding: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, var(--green-neon), var(--blue-neon));
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 136, 255, 0.5);
+            text-shadow: none;
+            border-color: #fff;
+        }
+
+        .error-msg {
+            color: var(--danger);
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        .success-screen {
+            text-align: center;
+        }
+
+        .success-screen h1 {
+            background: linear-gradient(90deg, var(--green-neon), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5em;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="terminal-container">
+        
+        <div class="logo-container">
+            <img src="IMG-20261021-WA0004.jpg" alt="Logo Patent DNA">
+        </div>
+
+        <div id="header-container">
+            <!-- Header será injetado pelo JavaScript -->
+        </div>
+
+        <div id="game-content">
+            <p style="text-align: center; color: var(--green-neon);"><span class="blink">Carregando Banco de Dados...</span></p>
+        </div>
+
+    </div>
+
+    <script>
+        let gameData = null;
+        let currentPhaseIndex = 0;
+
+        // Inicia o jogo carregando o JSON
+        async function startGame() {
+            try {
+                // Requisição FETCH para ler o JSON externo
+                const response = await fetch('banco_de_dados.json');
+                
+                if (!response.ok) {
+                    throw new Error('Falha ao acessar o arquivo de banco de dados.');
+                }
+                
+                gameData = await response.json();
+                
+                // Monta o Header Principal
+                document.getElementById('header-container').innerHTML = `
+                    <h2>${gameData.configuracoes_gerais.titulo_portal}</h2>
+                    <div class="status-danger">${gameData.configuracoes_gerais.status_alerta}</div>
+                `;
+                
+                // Renderiza a primeira fase
+                renderPhase(currentPhaseIndex);
+
+            } catch (error) {
+                document.getElementById('game-content').innerHTML = `
+                    <p class="error-msg">
+                        [ERRO DO SISTEMA] Não foi possível carregar "banco_de_dados.json".<br><br>
+                        Se você está abrindo este HTML diretamente do seu computador (duplo clique), 
+                        o navegador está bloqueando o script por segurança.<br>
+                        Solução: Hospede os arquivos em um servidor online ou use uma extensão de Local Server.
+                    </p>
+                `;
+                console.error(error);
+            }
+        }
+
+        // Função que renderiza o HTML dinâmico dependendo da fase atual
+        function renderPhase(index) {
+            const contentDiv = document.getElementById('game-content');
+            
+            // Verifica se a equipe concluiu todas as fases e mostra tela de sucesso
+            if (index >= gameData.fases.length) {
+                document.getElementById('header-container').style.display = 'none'; // Some com o alerta de perigo
+                
+                const sucesso = gameData.tela_sucesso;
+                contentDiv.innerHTML = `
+                    <div class="fase success-screen">
+                        <h1>${sucesso.titulo}</h1>
+                        <h2 style="color: var(--green-neon); margin-bottom: 20px;">${sucesso.subtitulo}</h2>
+                        <p style="color: var(--blue-neon); font-weight: bold; margin-bottom: 10px;">${sucesso.mensagem_destaque}</p>
+                        <p>${sucesso.mensagem_corpo}</p>
+                        <br>
+                        <p style="color: var(--green-neon); font-weight: bold; border: 1px solid var(--green-neon); padding: 15px;">${sucesso.mensagem_final}</p>
+                    </div>
+                `;
+                // Rola para o topo
+                document.getElementById('terminal-container').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            // Pega as informações da fase atual no JSON
+            const fase = gameData.fases[index];
+            let inputHTML = "";
+
+            // Se for do tipo 'select', monta o dropdown com as equipes
+            if (fase.tipo_input === "select") {
+                let options = `<option value="">[ Selecione... ]</option>`;
+                gameData.equipes.forEach(eq => {
+                    options += `<option value="${eq.id}">${eq.nome}</option>`;
+                });
+                inputHTML = `<select id="input_fase">${options}</select>`;
+            } 
+            // Senão, cria o campo de texto/número correspondente
+            else {
+                inputHTML = `<input type="${fase.tipo_input}" id="input_fase" placeholder="${fase.placeholder || ''}" autocomplete="off">`;
+            }
+
+            // Injeta o código HTML gerado no container do jogo
+            contentDiv.innerHTML = `
+                <div class="fase">
+                    ${fase.titulo ? `<h3>${fase.titulo}</h3>` : ''}
+                    <p class="instrucao">${fase.instrucao}</p>
+                    ${inputHTML}
+                    <button onclick="checkAnswer(${index})">${fase.texto_botao}</button>
+                    <p id="erro-msg" class="error-msg"></p>
+                </div>
+            `;
+            
+            document.getElementById('terminal-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Validação da resposta
+        function checkAnswer(index) {
+            const fase = gameData.fases[index];
+            const valorDigitado = document.getElementById('input_fase').value.trim();
+            const msgErroDiv = document.getElementById('erro-msg');
+
+            // Regra especial para o Select (só garante que não está vazio)
+            if (fase.tipo_input === "select") {
+                if (valorDigitado !== "") {
+                    currentPhaseIndex++;
+                    renderPhase(currentPhaseIndex);
+                } else {
+                    msgErroDiv.innerText = fase.mensagem_erro;
+                }
+                return;
+            }
+
+            // Tratamento das senhas: remove espaços, coloca em maiúsculo e tira acentuação
+            let respostaLimpa = valorDigitado.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            let respostaCorretaLimpa = fase.resposta_correta.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+
+            // Compara
+            if (respostaLimpa === respostaCorretaLimpa) {
+                currentPhaseIndex++;
+                renderPhase(currentPhaseIndex);
+            } else {
+                msgErroDiv.innerText = fase.mensagem_erro;
+            }
+        }
+
+        // Executa a inicialização ao carregar o script
+        startGame();
+
+    </script>
+</body>
+</html>
