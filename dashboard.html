@@ -25,7 +25,7 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden; /* Evita barra de rolagem no projetor */
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             background-image: 
@@ -72,7 +72,7 @@
 
         .timer-container {
             text-align: right;
-            cursor: pointer; /* Indica que é clicável para iniciar */
+            cursor: pointer;
         }
 
         .timer {
@@ -91,7 +91,7 @@
             letter-spacing: 2px;
         }
 
-        /* GRID PRINCIPAL 16:9 (2 linhas x 5 colunas para as 10 equipes) */
+        /* GRID PRINCIPAL 16:9 */
         main {
             flex-grow: 1;
             display: grid;
@@ -122,12 +122,30 @@
             transform: translateY(-2px);
         }
 
+        /* NOVO CABEÇALHO DA EQUIPE COM COR */
+        .team-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .team-color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
         .team-name {
             font-size: 1.2em;
             font-weight: bold;
             color: #fff;
             text-align: center;
-            margin: 0 0 10px 0;
+            margin: 0;
             text-transform: uppercase;
         }
 
@@ -163,31 +181,25 @@
             color: rgba(255,255,255,0.4);
         }
 
-        /* ESTADOS DOS CARDS (Classes dinâmicas controladas pelo JS) */
-        
-        /* Fase 1 */
+        /* ESTADOS DOS CARDS */
         .team-card[data-fase="1"] .progress-step:nth-child(1) { background-color: var(--blue-neon); box-shadow: 0 0 8px var(--blue-neon); }
         .team-card[data-fase="1"] .status-text { color: var(--blue-neon); }
 
-        /* Fase 2 */
         .team-card[data-fase="2"] .progress-step:nth-child(1),
         .team-card[data-fase="2"] .progress-step:nth-child(2) { background-color: var(--blue-neon); box-shadow: 0 0 8px var(--blue-neon); }
         .team-card[data-fase="2"] .status-text { color: var(--blue-neon); }
 
-        /* Fase 3 */
         .team-card[data-fase="3"] .progress-step:nth-child(1),
         .team-card[data-fase="3"] .progress-step:nth-child(2),
         .team-card[data-fase="3"] .progress-step:nth-child(3) { background-color: var(--purple-neon); box-shadow: 0 0 8px var(--purple-neon); }
         .team-card[data-fase="3"] .status-text { color: var(--purple-neon); }
 
-        /* Fase 4 */
         .team-card[data-fase="4"] .progress-step:nth-child(1),
         .team-card[data-fase="4"] .progress-step:nth-child(2),
         .team-card[data-fase="4"] .progress-step:nth-child(3),
         .team-card[data-fase="4"] .progress-step:nth-child(4) { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
         .team-card[data-fase="4"] .status-text { color: var(--warning); }
 
-        /* Concluído */
         .team-card[data-fase="5"] { 
             border-color: var(--green-neon); 
             box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); 
@@ -197,7 +209,6 @@
         .team-card[data-fase="5"] .status-text { color: var(--green-neon); font-weight: bold; text-shadow: 0 0 5px var(--green-neon); }
         .team-card[data-fase="5"] .team-name { color: var(--green-neon); text-shadow: 0 0 5px var(--green-neon); }
 
-        /* Instrução Oculta para o Admin */
         .admin-tip {
             position: absolute;
             bottom: 5px;
@@ -234,28 +245,27 @@
     </main>
 
     <script>
-        // 1. DADOS DAS EQUIPES
-        // Utilizando os mesmos nomes das equipes da oficina
+        // 1. DADOS DAS EQUIPES (Atualizado com as cores da imagem)
         const equipes = [
-            { id: 'biomaterials', nome: 'Team Biomaterials' },
-            { id: 'diagnostics', nome: 'Team Diagnostics' },
-            { id: 'bioai', nome: 'Team BioAI' },
-            { id: 'regenerative', nome: 'Team Regenerative' },
-            { id: 'nanobiotech', nome: 'Team Nanobiotech' },
-            { id: 'biodevices', nome: 'Team BioDevices' },
-            { id: 'synthetic', nome: 'Team Synthetic' },
-            { id: 'precision', nome: 'Team Precision' },
-            { id: 'genomics', nome: 'Team Genomics' },
-            { id: 'biotherapeutics', nome: 'Team Biotherapeutics' }
+            { id: 'biomaterials', nome: 'Team Biomaterials', cor: '#00cc00' }, // Verde
+            { id: 'diagnostics', nome: 'Team Diagnostics', cor: '#0066ff' }, // Azul
+            { id: 'bioai', nome: 'Team BioAI', cor: '#9933cc' }, // Roxo
+            { id: 'regenerative', nome: 'Team Regenerative', cor: '#ff9900' }, // Laranja
+            { id: 'nanobiotech', nome: 'Team Nanobiotech', cor: '#cc0000' }, // Vermelho
+            { id: 'biodevices', nome: 'Team BioDevices', cor: '#ffcc00' }, // Amarelo
+            { id: 'synthetic', nome: 'Team Synthetic', cor: '#222222' }, // Preto
+            { id: 'precision', nome: 'Team Precision', cor: '#ffffff' }, // Branco
+            { id: 'genomics', nome: 'Team Genomics', cor: '#8b4513' }, // Marrom
+            { id: 'biotherapeutics', nome: 'Team Biotherapeutics', cor: '#ff66b2' } // Rosa
         ];
 
         const textStatus = [
-            "AGUARDANDO ACESSO...",     // 0
-            "ANALISANDO ANTERIORIDADE", // 1
-            "ESTRUTURANDO PATENTE",     // 2
-            "VALIDANDO COFRE BIOLÓGICO",// 3
-            "GERANDO DEPÓSITO INPI",    // 4
-            "PATENTE DEPOSITADA!"       // 5
+            "AGUARDANDO ACESSO...",
+            "ANALISANDO ANTERIORIDADE",
+            "ESTRUTURANDO PATENTE",
+            "VALIDANDO COFRE BIOLÓGICO",
+            "GERANDO DEPÓSITO INPI",
+            "PATENTE DEPOSITADA!"
         ];
 
         // 2. GERAR CARDS NO HTML
@@ -267,11 +277,13 @@
             card.setAttribute('data-fase', '0');
             card.id = `card-${equipe.id}`;
             
-            // Função de Clique: Botão Esquerdo avança, Shift+Botão Esquerdo retrocede (caso clique sem querer)
             card.onclick = (e) => atualizarFase(equipe.id, e.shiftKey ? -1 : 1);
 
             card.innerHTML = `
-                <h3 class="team-name">${equipe.nome}</h3>
+                <div class="team-header">
+                    <div class="team-color-dot" style="background-color: ${equipe.cor}; box-shadow: 0 0 10px ${equipe.cor};"></div>
+                    <h3 class="team-name">${equipe.nome}</h3>
+                </div>
                 <div class="status-text" id="status-${equipe.id}">${textStatus[0]}</div>
                 
                 <div class="progress-container">
@@ -299,7 +311,6 @@
             const statusLabel = document.getElementById(`status-${id}`);
             let faseAtual = parseInt(card.getAttribute('data-fase'));
             
-            // Calcula nova fase limitando entre 0 e 5
             let novaFase = faseAtual + direcao;
             if (novaFase < 0) novaFase = 0;
             if (novaFase > 5) novaFase = 5;
@@ -309,7 +320,7 @@
         }
 
         // 4. LÓGICA DO CRONÔMETRO
-        let tempoRestante = 60 * 60; // 60 minutos em segundos
+        let tempoRestante = 60 * 60;
         let timerInterval = null;
         const displayTimer = document.getElementById('display-timer');
 
@@ -317,30 +328,26 @@
             let minutos = Math.floor(tempoRestante / 60);
             let segundos = tempoRestante % 60;
             
-            // Formata para 2 dígitos (ex: 09:05)
             minutos = minutos < 10 ? "0" + minutos : minutos;
             segundos = segundos < 10 ? "0" + segundos : segundos;
             
             displayTimer.innerText = `${minutos}:${segundos}`;
 
-            // Muda de cor quando faltar menos de 10 minutos
             if(tempoRestante <= 600) {
-                displayTimer.style.color = "var(--danger)"; // Vermelho piscante
+                displayTimer.style.color = "var(--danger)";
                 if(tempoRestante % 2 === 0) displayTimer.style.opacity = "0.5";
                 else displayTimer.style.opacity = "1";
             } else {
-                displayTimer.style.color = "var(--green-neon)"; // Verde normal
+                displayTimer.style.color = "var(--green-neon)";
                 displayTimer.style.opacity = "1";
             }
         }
 
         function toggleTimer() {
             if (timerInterval) {
-                // Pausar
                 clearInterval(timerInterval);
                 timerInterval = null;
             } else {
-                // Iniciar
                 timerInterval = setInterval(() => {
                     if (tempoRestante > 0) {
                         tempoRestante--;
@@ -353,7 +360,6 @@
             }
         }
 
-        // Inicializa o cronômetro na tela (parado)
         atualizarDisplay();
 
     </script>
