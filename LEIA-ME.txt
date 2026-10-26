@@ -1,0 +1,23 @@
+PATENT DNA — OPERAÇÃO RESGATE (visual reformulado)
+
+ARQUIVOS
+- index.html: nova interface do jogo
+- banco_de_dados.json: banco de dados original, sem alterações
+
+COMO INSTALAR NO GITHUB
+1. Abra o repositório que hospeda o jogo.
+2. Substitua o arquivo index.html pelo index.html deste pacote.
+3. Mantenha o arquivo banco_de_dados.json na mesma pasta do index.html (pode enviar este do pacote se necessário).
+4. Publique via GitHub Pages e atualize a página no navegador.
+
+Se houver um arquivo logo.png na pasta, a interface exibe a logo original automaticamente. Caso não exista, exibe o símbolo e nome PATENT DNA.
+
+O jogo continua usando as mesmas equipes, quatro desafios e respostas do JSON.
+A seleção da equipe inicia um cronômetro visual de 60 minutos, que não impede responder após 00:00.
+O botão REINICIAR MISSÃO limpa o progresso da sessão atual.
+
+OBSERVAÇÕES
+- O jogo depende de carregar o arquivo JSON com fetch(), portanto pode falhar se aberto com duplo clique (file://); use servidor local ou GitHub Pages.
+- O visual usa fontes da Google Fonts com fontes alternativas quando estiver offline.
+- Este site é uma simulação educacional e não representa um serviço oficial do INPI.
+- As respostas continuam visíveis a quem acessar diretamente o JSON no navegador, como já acontecia na versão original. Para prevenção real de consulta às respostas, é necessário validar num servidor/backend.
