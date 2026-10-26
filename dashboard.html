@@ -1,367 +1,310 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAINEL DE CONTROLE - PATENT DNA</title>
-    <style>
-        /* Paleta de Cores baseada na Logo */
-        :root {
-            --bg-dark: #030613;
-            --bg-panel: rgba(10, 17, 40, 0.8);
-            --green-neon: #39ff14;
-            --blue-neon: #0088ff;
-            --purple-neon: #8a2be2;
-            --text-light: #e0e0e0;
-            --danger: #ff3333;
-            --warning: #ffb400;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: 'Courier New', Courier, monospace;
-            margin: 0;
-            padding: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 136, 255, 0.05) 0%, transparent 70%),
-                linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8));
-        }
-
-        /* HEADER: Logo e Cronômetro */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 50px;
-            height: 15vh;
-            border-bottom: 2px solid var(--blue-neon);
-            box-shadow: 0 0 20px rgba(0, 136, 255, 0.2);
-            background: rgba(3, 6, 19, 0.9);
-        }
-
-        .logo-container img {
-            max-height: 100px;
-            object-fit: contain;
-        }
-
-        .header-title {
-            text-align: center;
-        }
-
-        .header-title h1 {
-            margin: 0;
-            font-size: 2.5em;
-            background: linear-gradient(90deg, var(--green-neon), var(--blue-neon));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-
-        .header-title h2 {
-            margin: 5px 0 0 0;
-            font-size: 1.2em;
-            color: var(--purple-neon);
-            letter-spacing: 5px;
-        }
-
-        .timer-container {
-            text-align: right;
-            cursor: pointer;
-        }
-
-        .timer {
-            font-size: 4em;
-            font-weight: bold;
-            color: var(--danger);
-            text-shadow: 0 0 15px rgba(255, 51, 51, 0.8);
-            margin: 0;
-            line-height: 1;
-            transition: color 0.3s;
-        }
-
-        .timer-label {
-            font-size: 1em;
-            color: var(--text-light);
-            letter-spacing: 2px;
-        }
-
-        /* GRID PRINCIPAL 16:9 */
-        main {
-            flex-grow: 1;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 1.5vw;
-            padding: 1.5vw 3vw;
-            box-sizing: border-box;
-        }
-
-        /* CARDS DAS EQUIPES */
-        .team-card {
-            background-color: var(--bg-panel);
-            border: 1px solid rgba(0, 136, 255, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .team-card:hover {
-            border-color: var(--green-neon);
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
-            transform: translateY(-2px);
-        }
-
-        /* NOVO CABEÇALHO DA EQUIPE COM COR */
-        .team-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .team-color-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
-
-        .team-name {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #fff;
-            text-align: center;
-            margin: 0;
-            text-transform: uppercase;
-        }
-
-        .status-text {
-            font-size: 0.9em;
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            margin-bottom: 10px;
-            height: 1.2em;
-        }
-
-        /* BARRA DE PROGRESSO */
-        .progress-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-
-        .progress-step {
-            flex-grow: 1;
-            height: 15px;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            border: 1px solid rgba(0,0,0,0.5);
-            transition: all 0.5s ease;
-        }
-
-        .step-label-container {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7em;
-            color: rgba(255,255,255,0.4);
-        }
-
-        /* ESTADOS DOS CARDS */
-        .team-card[data-fase="1"] .progress-step:nth-child(1) { background-color: var(--blue-neon); box-shadow: 0 0 8px var(--blue-neon); }
-        .team-card[data-fase="1"] .status-text { color: var(--blue-neon); }
-
-        .team-card[data-fase="2"] .progress-step:nth-child(1),
-        .team-card[data-fase="2"] .progress-step:nth-child(2) { background-color: var(--blue-neon); box-shadow: 0 0 8px var(--blue-neon); }
-        .team-card[data-fase="2"] .status-text { color: var(--blue-neon); }
-
-        .team-card[data-fase="3"] .progress-step:nth-child(1),
-        .team-card[data-fase="3"] .progress-step:nth-child(2),
-        .team-card[data-fase="3"] .progress-step:nth-child(3) { background-color: var(--purple-neon); box-shadow: 0 0 8px var(--purple-neon); }
-        .team-card[data-fase="3"] .status-text { color: var(--purple-neon); }
-
-        .team-card[data-fase="4"] .progress-step:nth-child(1),
-        .team-card[data-fase="4"] .progress-step:nth-child(2),
-        .team-card[data-fase="4"] .progress-step:nth-child(3),
-        .team-card[data-fase="4"] .progress-step:nth-child(4) { background-color: var(--warning); box-shadow: 0 0 8px var(--warning); }
-        .team-card[data-fase="4"] .status-text { color: var(--warning); }
-
-        .team-card[data-fase="5"] { 
-            border-color: var(--green-neon); 
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.4); 
-            background: rgba(57, 255, 20, 0.1);
-        }
-        .team-card[data-fase="5"] .progress-step { background-color: var(--green-neon); box-shadow: 0 0 10px var(--green-neon); }
-        .team-card[data-fase="5"] .status-text { color: var(--green-neon); font-weight: bold; text-shadow: 0 0 5px var(--green-neon); }
-        .team-card[data-fase="5"] .team-name { color: var(--green-neon); text-shadow: 0 0 5px var(--green-neon); }
-
-        .admin-tip {
-            position: absolute;
-            bottom: 5px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 0.8em;
-            color: rgba(255,255,255,0.3);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .team-card:hover .admin-tip { opacity: 1; }
-
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070c18">
+<title>PATENT DNA · Central de Operações</title>
+<meta name="description" content="Painel de acompanhamento presencial das dez equipes na Operação Resgate Bio-Osso.">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#070c18;--surface:#101b2e;--surface-dark:#0b1425;--border:#283954;
+  --white:#f3f8ff;--soft:#a9bad1;--muted:#7186a5;--blue:#40ccff;
+  --lime:#b0ff87;--purple:#aa91ff;--red:#ff647d;--amber:#fbc879;
+  --display:system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'SFMono-Regular',Consolas,'Liberation Mono',monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;width:100%}
+body{font-family:var(--display);color:var(--white);background:var(--bg);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 56% 45% at 49% -5%,rgba(43,121,205,.16),transparent 72%),radial-gradient(ellipse 34% 40% at 104% 95%,rgba(71,43,158,.10),transparent 78%),#070c18}
+body::after{content:'';position:fixed;inset:0;z-index:-1;opacity:.13;pointer-events:none;background-image:linear-gradient(90deg,rgba(113,167,222,.22) 1px,transparent 1px),linear-gradient(rgba(113,167,222,.22) 1px,transparent 1px);background-size:45px 45px;mask-image:linear-gradient(to bottom,#000,transparent 91%)}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+button:disabled{opacity:.4;cursor:default}
+.app{height:100dvh;min-height:680px;display:flex;flex-direction:column;position:relative;padding:0 clamp(20px,2.2vw,48px)}
+.topbar{height:119px;flex:0 0 119px;border-bottom:1px solid rgba(129,168,209,.17);display:grid;grid-template-columns:minmax(222px,1fr) minmax(300px,1.5fr) minmax(250px,1fr);align-items:center;gap:22px}
+.brand{display:flex;gap:13px;align-items:center;min-width:0}
+.brand-symbol{width:51px;height:51px;border-radius:14px;border:1px solid rgba(64,204,255,.41);background:linear-gradient(138deg,#15354e,#132034);box-shadow:0 0 30px rgba(64,204,255,.065);display:grid;place-items:center;flex:0 0 51px}
+.brand-symbol svg{width:29px;height:29px}
+.brand-word{font-size:22px;letter-spacing:-.065em;font-weight:850;line-height:1.07;white-space:nowrap}
+.brand-word span{color:var(--blue)}
+.brand-caption{font:10px var(--mono);letter-spacing:.09em;color:var(--muted);margin-top:7px}
+.custom-logo{display:none;max-width:200px;max-height:73px;object-fit:contain}
+.brand.has-custom-logo .custom-logo{display:block}
+.brand.has-custom-logo .brand-symbol,.brand.has-custom-logo .brand-words{display:none}
+.heading{text-align:center;min-width:0}
+.eyebrow{font:700 10px var(--mono);letter-spacing:.20em;color:var(--blue);display:flex;align-items:center;justify-content:center;gap:11px}
+.eyebrow::before,.eyebrow::after{content:'';height:1px;width:25px;background:rgba(64,204,255,.55)}
+h1{margin:10px 0 5px;font-size:clamp(25px,2.13vw,37px);letter-spacing:-.051em;line-height:1;font-weight:780}
+.heading-note{font:10px var(--mono);letter-spacing:.15em;color:#8e9fba}
+.clock{justify-self:end;min-width:220px;text-align:right;display:flex;align-items:center;gap:18px}
+.clock-icon{width:39px;height:39px;border-radius:11px;background:rgba(64,204,255,.09);border:1px solid rgba(64,204,255,.24);display:grid;place-items:center;color:var(--blue)}
+.clock-copy{display:flex;flex-direction:column;align-items:flex-end}
+.clock-label{font:700 10px var(--mono);letter-spacing:.15em;color:var(--muted);margin-bottom:4px}
+.clock-value{font:700 clamp(38px,3.33vw,60px)/.94 var(--mono);letter-spacing:-.072em;color:var(--lime);font-variant-numeric:tabular-nums;transition:color .2s}
+.clock-value.urgent{color:var(--red);text-shadow:0 0 25px rgba(255,100,125,.22)}
+.clock-value.warning{color:var(--amber)}
+.clock-state{font:10px var(--mono);color:#9cc2e4;margin-top:5px;letter-spacing:.06em}
+.clock-state .tiny-dot{display:inline-block;margin-right:4px;width:6px;height:6px;vertical-align:2px;border-radius:99px;background:#8395b0}
+.clock-state.running .tiny-dot{background:var(--lime);box-shadow:0 0 10px var(--lime)}
+.clock-state.ended .tiny-dot{background:var(--red)}
+.overview{flex:0 0 115px;min-height:115px;display:flex;align-items:center;gap:24px;justify-content:space-between}
+.mission{min-width:0;display:flex;flex-direction:column;gap:9px}
+.mission-eyebrow{font:700 10px var(--mono);color:var(--lime);letter-spacing:.17em;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.mission-eyebrow::before{content:'';width:24px;height:2px;background:var(--lime)}
+.mission-title{font-size:clamp(18px,1.44vw,25px);font-weight:730;letter-spacing:-.04em;white-space:nowrap}
+.mission-title em{font-style:normal;color:var(--blue)}
+.summary{display:flex;align-items:stretch;gap:9px;flex:0 1 auto}
+.summary-box{padding:14px 22px 12px;min-width:134px;display:flex;align-items:center;gap:15px;border:1px solid rgba(111,142,185,.20);border-radius:10px;background:linear-gradient(145deg,rgba(23,39,64,.58),rgba(11,23,44,.72))}
+.summary-num{font:730 35px/.95 var(--mono);letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.summary-meta{font:700 10px/1.65 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:#879dbb}
+.summary-box.active .summary-num{color:var(--blue)}
+.summary-box.done .summary-num{color:var(--lime)}
+.summary-box.total .summary-num{color:#f4f8ff}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 34px}
+.section-title{font:700 11px var(--mono);color:#afc1d9;letter-spacing:.18em;display:flex;align-items:center;gap:12px}
+.section-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue)}
+.section-right{font:10px var(--mono);letter-spacing:.07em;color:#758ba8}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:clamp(9px,1.15vw,21px);padding-bottom:15px}
+.team-card{--team:#40ccff;position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;min-width:0;min-height:0;overflow:hidden;padding:clamp(13px,1.17vw,21px);border:1px solid #2b3d56;border-radius:13px;background:linear-gradient(152deg,rgba(22,38,60,.95),rgba(11,21,38,.98) 74%);transition:border-color .18s,transform .18s,box-shadow .18s;isolation:isolate}
+.team-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--team);opacity:.8}
+.team-card::after{content:'';position:absolute;right:-42px;top:-63px;height:140px;width:140px;border-radius:50%;background:var(--team);opacity:.035;filter:blur(22px);pointer-events:none;z-index:-1}
+.team-card:hover{border-color:rgba(110,199,255,.6);box-shadow:0 5px 26px rgba(34,111,172,.15);transform:translateY(-2px)}
+.team-card:active{transform:translateY(0)}
+.team-card[data-fase="5"]{border-color:rgba(176,255,135,.58);background:linear-gradient(152deg,rgba(23,61,49,.92),rgba(11,31,36,.96) 80%);box-shadow:inset 0 0 30px rgba(176,255,135,.025),0 0 26px rgba(176,255,135,.065)}
+.team-card[data-fase="5"]::before{background:var(--lime);width:4px}
+.card-top{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:clamp(8px,1.3vh,17px)}
+.division{font:700 clamp(9px,.70vw,12px) var(--mono);letter-spacing:.10em;color:#8399b8}
+.terminal-id{font:9px var(--mono);color:#536b8c}
+.team-identity{display:flex;align-items:center;gap:10px;min-height:43px;min-width:0}
+.team-icon{height:40px;width:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--team) 11%,transparent);border:1px solid color-mix(in srgb,var(--team) 29%,transparent);font:750 15px var(--mono);color:var(--team);box-shadow:inset 0 0 17px rgba(0,0,0,.08)}
+.team-card[data-fase="5"] .team-icon{color:var(--lime);border-color:rgba(176,255,135,.3);background:rgba(176,255,135,.1)}
+.team-name{min-width:0;line-height:1.12;font-size:clamp(14px,1.02vw,19px);font-weight:780;letter-spacing:-.035em;color:#eff7ff;overflow-wrap:anywhere}
+.team-name .team-prefix{display:block;font:600 10px var(--mono);letter-spacing:.07em;color:#8196b5;margin-bottom:4px}
+.card-spacer{flex:1;min-height:6px}
+.stage-head{display:flex;justify-content:space-between;align-items:end;gap:8px;margin-bottom:10px}
+.stage-tag{font:700 10px var(--mono);letter-spacing:.06em;color:#849ab9}
+.stage-no{font:750 clamp(19px,1.55vw,29px)/1 var(--mono);letter-spacing:-.07em;color:#d5e8fa;font-variant-numeric:tabular-nums}
+.stage-no span{font-size:.56em;color:#7890b0;letter-spacing:-.025em}
+.team-card[data-fase="5"] .stage-no{color:var(--lime)}
+.stage-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-bottom:11px}
+.stage-step{height:clamp(9px,1.1vh,13px);border:1px solid rgba(93,124,163,.27);background:#24334c;border-radius:3px;transition:background .25s,border-color .25s,box-shadow .25s}
+.stage-step.completed{background:var(--blue);border-color:var(--blue);box-shadow:0 0 13px rgba(64,204,255,.26)}
+.stage-step.current{background:repeating-linear-gradient(115deg,rgba(64,204,255,.40) 0 7px,rgba(64,204,255,.68) 7px 14px);border-color:var(--blue)}
+.team-card[data-fase="5"] .stage-step{background:var(--lime);border-color:var(--lime);box-shadow:0 0 13px rgba(176,255,135,.20)}
+.card-bottom{border-top:1px solid rgba(135,160,198,.13);padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:35px}
+.status{font:700 clamp(9px,.65vw,11px)/1.4 var(--mono);letter-spacing:.035em;color:#a3b6cf;text-transform:uppercase}
+.status-dot{width:7px;height:7px;flex:0 0 7px;border-radius:99px;background:#576b8c}
+.team-card[data-fase="1"] .status-dot,.team-card[data-fase="2"] .status-dot,.team-card[data-fase="3"] .status-dot,.team-card[data-fase="4"] .status-dot{background:var(--blue);box-shadow:0 0 10px rgba(64,204,255,.6)}
+.team-card[data-fase="5"] .status{color:var(--lime)}
+.team-card[data-fase="5"] .status-dot{background:var(--lime);box-shadow:0 0 12px rgba(176,255,135,.65)}
+.footer{border-top:1px solid rgba(118,149,186,.18);height:78px;flex:0 0 78px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.instructions{font:10px/1.75 var(--mono);letter-spacing:.045em;color:#8b9eb9}
+.instructions strong{color:#d2e3f9;font-weight:600}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:nowrap}
+.control{border:1px solid #334765;border-radius:8px;background:#15243b;padding:10px 13px;min-height:39px;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;font:700 10px var(--mono);letter-spacing:.04em;transition:background .15s,border-color .15s}
+.control:hover{background:#203552;border-color:#6ba6d0}
+.control svg{width:15px;height:15px}
+.control.primary{border-color:rgba(176,255,135,.42);background:rgba(176,255,135,.11);color:var(--lime)}
+.control.primary:hover{background:rgba(176,255,135,.19)}
+.control.danger{color:#dd92a1}
+.control.danger:hover{background:rgba(255,100,125,.09);border-color:rgba(255,100,125,.44)}
+.shortcut{opacity:.64}
+.toast{position:fixed;bottom:94px;left:50%;transform:translate(-50%,12px);padding:12px 17px;border:1px solid rgba(111,177,218,.55);background:#162c42;color:#e2f5ff;border-radius:8px;font:12px var(--mono);z-index:20;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 45px rgba(0,0,0,.3)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.dialog-backdrop{position:fixed;inset:0;background:rgba(2,7,16,.76);display:grid;place-items:center;z-index:50;padding:20px;backdrop-filter:blur(5px)}
+.dialog-backdrop[hidden]{display:none}
+.dialog{max-width:450px;width:100%;padding:28px;border:1px solid #45617c;background:#132239;border-radius:14px;box-shadow:0 25px 100px rgba(0,0,0,.5)}
+.dialog-kicker{font:700 11px var(--mono);letter-spacing:.12em;color:var(--red)}
+.dialog h2{font-size:26px;margin:12px 0;letter-spacing:-.04em}
+.dialog p{color:#b0c2d9;font-size:14px;line-height:1.7}
+.dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:23px}
+.dialog-actions button{padding:11px 17px;border-radius:7px;border:1px solid #46607b;background:#172d48;font:700 12px var(--mono)}
+.dialog-actions button.confirm{border-color:#b34662;background:#9d2f4b;color:#fff}
+.mini-help{display:none}
+@media (min-width:1920px){.app{padding:0 48px}.topbar{height:131px;flex-basis:131px}.overview{flex-basis:125px}.grid{gap:20px;padding-bottom:20px}.team-card{padding:23px}.card-top{margin-bottom:20px}.team-identity{gap:13px}.team-icon{width:50px;height:50px;flex-basis:50px;font-size:18px}.team-name{font-size:20px}.stage-steps{gap:8px;margin-bottom:15px}.card-bottom{padding-top:17px}.footer{height:88px;flex-basis:88px}}
+@media (max-width:1350px){.app{padding:0 23px}.topbar{height:104px;flex-basis:104px;grid-template-columns:minmax(175px,1fr) minmax(275px,1.5fr) minmax(197px,1fr)}.overview{flex-basis:92px;min-height:92px}.summary-box{padding:10px 13px;min-width:103px;gap:9px}.summary-num{font-size:29px}.summary-meta{font-size:8px}.grid{gap:9px}.team-card{padding:12px}.team-icon{height:33px;width:33px;flex-basis:33px;font-size:12px}.team-identity{gap:7px}.team-name{font-size:14px}.footer{height:69px;flex-basis:69px}.instructions{font-size:9px}.control{font-size:9px;padding:8px 10px}}
+@media (max-width:1020px){.app{height:auto;min-height:100dvh}.grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto}.team-card{min-height:220px}.topbar{grid-template-columns:1fr 1.5fr;gap:10px}.heading{display:none}.overview{flex-wrap:wrap;padding:16px 0;gap:15px}.summary{width:100%;justify-content:stretch}.summary-box{flex:1}.section-head{padding-bottom:10px}.footer{height:auto;min-height:90px;padding:16px 0;flex-wrap:wrap}.stage-no{font-size:25px}.team-name{font-size:17px}}
+@media (max-width:640px){.app{padding:0 16px}.topbar{height:94px;flex-basis:94px;grid-template-columns:minmax(0,1fr) auto}.brand-word{font-size:18px}.brand-caption{font-size:8px}.brand-symbol{height:42px;width:42px;flex-basis:42px}.clock{min-width:0;gap:0}.clock-icon{display:none}.clock-value{font-size:34px}.clock-label{font-size:8px}.clock-state{font-size:8px}.overview{min-height:auto;flex-basis:auto}.mission-title{font-size:20px;white-space:normal}.summary-box{padding:12px 9px;min-width:0}.summary-num{font-size:27px}.summary-meta{font-size:8px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.team-card{min-height:208px;padding:11px}.card-top{margin-bottom:9px}.division{font-size:9px}.terminal-id{display:none}.team-name{font-size:13px}.team-prefix{font-size:9px}.team-icon{width:30px;height:30px;flex-basis:30px;font-size:11px}.team-identity{gap:6px}.stage-no{font-size:24px}.stage-tag{font-size:9px}.status{font-size:9px}.footer{display:block}.instructions{margin-bottom:12px}.controls{flex-wrap:wrap}.control{flex:1 1 auto}.section-right{display:none}}
+@media (max-width:380px){.grid{grid-template-columns:1fr}.team-card{min-height:185px}.summary-meta{font-size:7px}}
+@media (max-height:780px) and (min-width:1021px){.app{min-height:595px}.topbar{height:87px;flex-basis:87px}.brand-symbol{width:40px;height:40px;flex-basis:40px}.brand-word{font-size:20px}.brand-caption{font-size:9px}.eyebrow{font-size:9px}h1{font-size:26px;margin:5px 0 3px}.heading-note{font-size:9px}.clock-value{font-size:40px}.clock-icon{display:none}.overview{min-height:84px;flex-basis:84px}.mission{gap:4px}.summary-box{padding:9px 12px}.summary-num{font-size:27px}.section-head{flex-basis:24px}.grid{padding-bottom:8px}.team-card{padding:10px}.card-top{margin-bottom:6px}.team-icon{width:30px;height:30px;flex-basis:30px}.team-identity{min-height:34px}.team-name{font-size:14px}.stage-steps{margin-bottom:8px}.stage-head{margin-bottom:6px}.stage-no{font-size:21px}.card-bottom{padding-top:8px;min-height:28px}.footer{height:58px;flex-basis:58px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
 </head>
 <body>
-
-    <header>
-        <div class="logo-container">
-            <img src="logo.png" alt="Logo Patent DNA">
-        </div>
-        <div class="header-title">
-            <h1>MONITORAMENTO DE REDE</h1>
-            <h2>DIVISÕES DE PESQUISA</h2>
-        </div>
-        <div class="timer-container" onclick="toggleTimer()" title="Clique para iniciar/pausar o relógio">
-            <div class="timer" id="display-timer">60:00</div>
-            <div class="timer-label">TEMPO RESTANTE</div>
-        </div>
-    </header>
-
-    <main id="grid-equipes">
-        <!-- Os cards serão gerados pelo JavaScript aqui -->
-    </main>
-
-    <script>
-        // 1. DADOS DAS EQUIPES (Atualizado com as cores da imagem)
-        const equipes = [
-            { id: 'biomaterials', nome: 'Team Biomaterials', cor: '#00cc00' }, // Verde
-            { id: 'diagnostics', nome: 'Team Diagnostics', cor: '#0066ff' }, // Azul
-            { id: 'bioai', nome: 'Team BioAI', cor: '#9933cc' }, // Roxo
-            { id: 'regenerative', nome: 'Team Regenerative', cor: '#ff9900' }, // Laranja
-            { id: 'nanobiotech', nome: 'Team Nanobiotech', cor: '#cc0000' }, // Vermelho
-            { id: 'biodevices', nome: 'Team BioDevices', cor: '#ffcc00' }, // Amarelo
-            { id: 'synthetic', nome: 'Team Synthetic', cor: '#222222' }, // Preto
-            { id: 'precision', nome: 'Team Precision', cor: '#ffffff' }, // Branco
-            { id: 'genomics', nome: 'Team Genomics', cor: '#8b4513' }, // Marrom
-            { id: 'biotherapeutics', nome: 'Team Biotherapeutics', cor: '#ff66b2' } // Rosa
-        ];
-
-        const textStatus = [
-            "AGUARDANDO ACESSO...",
-            "ANALISANDO ANTERIORIDADE",
-            "ESTRUTURANDO PATENTE",
-            "VALIDANDO COFRE BIOLÓGICO",
-            "GERANDO DEPÓSITO INPI",
-            "PATENTE DEPOSITADA!"
-        ];
-
-        // 2. GERAR CARDS NO HTML
-        const grid = document.getElementById('grid-equipes');
-
-        equipes.forEach(equipe => {
-            const card = document.createElement('div');
-            card.className = 'team-card';
-            card.setAttribute('data-fase', '0');
-            card.id = `card-${equipe.id}`;
-            
-            card.onclick = (e) => atualizarFase(equipe.id, e.shiftKey ? -1 : 1);
-
-            card.innerHTML = `
-                <div class="team-header">
-                    <div class="team-color-dot" style="background-color: ${equipe.cor}; box-shadow: 0 0 10px ${equipe.cor};"></div>
-                    <h3 class="team-name">${equipe.nome}</h3>
-                </div>
-                <div class="status-text" id="status-${equipe.id}">${textStatus[0]}</div>
-                
-                <div class="progress-container">
-                    <div class="progress-step"></div>
-                    <div class="progress-step"></div>
-                    <div class="progress-step"></div>
-                    <div class="progress-step"></div>
-                </div>
-                
-                <div class="step-label-container">
-                    <span>F1</span>
-                    <span>F2</span>
-                    <span>F3</span>
-                    <span>F4</span>
-                </div>
-                <div class="admin-tip">Click: Avançar | Shift+Click: Voltar</div>
-            `;
-            
-            grid.appendChild(card);
-        });
-
-        // 3. FUNÇÃO DE CONTROLE DE FASES
-        function atualizarFase(id, direcao) {
-            const card = document.getElementById(`card-${id}`);
-            const statusLabel = document.getElementById(`status-${id}`);
-            let faseAtual = parseInt(card.getAttribute('data-fase'));
-            
-            let novaFase = faseAtual + direcao;
-            if (novaFase < 0) novaFase = 0;
-            if (novaFase > 5) novaFase = 5;
-
-            card.setAttribute('data-fase', novaFase);
-            statusLabel.innerText = textStatus[novaFase];
-        }
-
-        // 4. LÓGICA DO CRONÔMETRO
-        let tempoRestante = 60 * 60;
-        let timerInterval = null;
-        const displayTimer = document.getElementById('display-timer');
-
-        function atualizarDisplay() {
-            let minutos = Math.floor(tempoRestante / 60);
-            let segundos = tempoRestante % 60;
-            
-            minutos = minutos < 10 ? "0" + minutos : minutos;
-            segundos = segundos < 10 ? "0" + segundos : segundos;
-            
-            displayTimer.innerText = `${minutos}:${segundos}`;
-
-            if(tempoRestante <= 600) {
-                displayTimer.style.color = "var(--danger)";
-                if(tempoRestante % 2 === 0) displayTimer.style.opacity = "0.5";
-                else displayTimer.style.opacity = "1";
-            } else {
-                displayTimer.style.color = "var(--green-neon)";
-                displayTimer.style.opacity = "1";
-            }
-        }
-
-        function toggleTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            } else {
-                timerInterval = setInterval(() => {
-                    if (tempoRestante > 0) {
-                        tempoRestante--;
-                        atualizarDisplay();
-                    } else {
-                        clearInterval(timerInterval);
-                        displayTimer.innerText = "TEMPO ESGOTADO!";
-                    }
-                }, 1000);
-            }
-        }
-
-        atualizarDisplay();
-
-    </script>
+<div class="app">
+<header class="topbar">
+ <div class="brand" id="brand">
+  <img class="custom-logo" id="custom-logo" src="logo.png" alt="PATENT DNA">
+  <div class="brand-symbol" aria-hidden="true"><svg fill="none" stroke="#55d8ff" stroke-width="2.1" viewBox="0 0 34 34"><path d="M7 3c0 15 20 13 20 28M27 3C27 18 7 16 7 31"/><path stroke="#a7ff96" stroke-width="1.5" d="M10 7h14M12 13h10M12 21h10M10 27h14"/><circle cx="7" cy="3" r="2" fill="#a7ff96" stroke="none"/><circle cx="27" cy="31" r="2" fill="#a7ff96" stroke="none"/></svg></div>
+  <div class="brand-words"><div class="brand-word">PATENT<span>DNA</span></div><div class="brand-caption">CENTRO DE SEGURANÇA · INPI</div></div>
+ </div>
+ <div class="heading">
+  <div class="eyebrow">PAINEL DE CONTROLE · OPERAÇÃO ATIVA</div>
+  <h1>CENTRAL DE OPERAÇÕES</h1>
+  <div class="heading-note">MONITORAMENTO DAS DIVISÕES DE PESQUISA</div>
+ </div>
+ <div class="clock">
+  <div class="clock-icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+  <div class="clock-copy"><div class="clock-label">TEMPO RESTANTE</div><div class="clock-value" id="display-timer" aria-live="off">60:00</div><div class="clock-state" id="clock-state"><span class="tiny-dot"></span>PRONTO PARA INICIAR</div></div>
+ </div>
+</header>
+<section class="overview" aria-label="Resumo da operação">
+ <div class="mission"><div class="mission-eyebrow">PROTOCOLO 01 · RESGATE DE PATENTE</div><div class="mission-title">OPERAÇÃO RESGATE <em>/</em> BIO-OSSO</div></div>
+ <div class="summary">
+  <div class="summary-box total"><span class="summary-num" id="total-equipes">10</span><span class="summary-meta">DIVISÕES<br>REGISTRADAS</span></div>
+  <div class="summary-box active"><span class="summary-num" id="em-atividade">00</span><span class="summary-meta">EM<br>MISSÃO</span></div>
+  <div class="summary-box done"><span class="summary-num" id="concluidas">00</span><span class="summary-meta">MISSÕES<br>CONCLUÍDAS</span></div>
+ </div>
+</section>
+<div class="section-head"><div class="section-title">STATUS DAS DEZ EQUIPES</div><div class="section-right">04 ETAPAS DE VALIDAÇÃO &nbsp; • &nbsp; ATUALIZAÇÃO MANUAL PELA COORDENAÇÃO</div></div>
+<main class="grid" id="grid-equipes" aria-label="Etapas das equipes"></main>
+<footer class="footer">
+ <div class="instructions"><strong>CONTROLE DA COORDENAÇÃO</strong><br>Clique na equipe: avançar &nbsp; • &nbsp; Shift + clique: voltar &nbsp; • &nbsp; Progresso salvo neste navegador</div>
+ <div class="controls" aria-label="Controles da dinâmica">
+  <button class="control" id="minus-five" title="Retirar 5 minutos do cronômetro">−5 MIN</button>
+  <button class="control" id="plus-five" title="Acrescentar 5 minutos ao cronômetro">+5 MIN</button>
+  <button class="control primary" id="timer-toggle" title="Iniciar ou pausar o cronômetro"><svg id="timer-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg><span id="timer-action">INICIAR</span></button>
+  <button class="control" id="fullscreen" title="Alternar tela cheia"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>TELA CHEIA</button>
+  <button class="control danger" id="reset-progress" title="Zerar as etapas de todas as equipes">ZERAR PAINEL</button>
+ </div>
+</footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="dialog-backdrop" id="reset-dialog" hidden>
+ <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-desc">
+  <div class="dialog-kicker">AÇÃO DA COORDENAÇÃO</div>
+  <h2 id="dialog-title">Zerar todo o painel?</h2>
+  <p id="dialog-desc">Todas as equipes voltarão para “Aguardando acesso” e o cronômetro será redefinido para 60:00. Esta ação não pode ser desfeita.</p>
+  <div class="dialog-actions"><button id="cancel-reset">CANCELAR</button><button class="confirm" id="confirm-reset">ZERAR TUDO</button></div>
+ </div>
+</div>
+<script>
+(()=>{
+ 'use strict';
+ const equipes=[
+  {id:'biomaterials',nome:'Biomaterials',cor:'#80e6a6',sigla:'BM'},
+  {id:'diagnostics',nome:'Diagnostics',cor:'#65baff',sigla:'DX'},
+  {id:'bioai',nome:'BioAI',cor:'#ae92ff',sigla:'AI'},
+  {id:'regenerative',nome:'Regenerative Medicine',cor:'#ffad69',sigla:'RM'},
+  {id:'nanobiotech',nome:'Nanobiotech',cor:'#ff758f',sigla:'NB'},
+  {id:'biodevices',nome:'BioDevices',cor:'#f6d47b',sigla:'BD'},
+  {id:'synthetic',nome:'Synthetic Biology',cor:'#b9c3d7',sigla:'SB'},
+  {id:'precision',nome:'Precision Health',cor:'#d5f2ef',sigla:'PH'},
+  {id:'genomics',nome:'Genomics',cor:'#cba581',sigla:'GN'},
+  {id:'biotherapeutics',nome:'Biotherapeutics',cor:'#ff8bc8',sigla:'BT'}
+ ];
+ const statuses=['AGUARDANDO ACESSO','BUSCA DE ANTERIORIDADE','QUADRO REIVINDICATÓRIO','SUFICIÊNCIA DESCRITIVA','DEPÓSITO NO INPI','PATENTE DEPOSITADA!'];
+ const SAVE_KEY='patent-dna-monitor-v2';
+ const TOTAL_MS=60*60*1000;
+ const $=id=>document.getElementById(id);
+ const inRange=(value,min,max)=>Math.min(max,Math.max(min,value));
+ const defaultState=()=>({fases:Object.fromEntries(equipes.map(e=>[e.id,0])),timer:{remainingMs:TOTAL_MS,endAt:null,running:false}});
+ let state=defaultState();
+ let timerHandle=null;
+ let toastHandle=null;
+ const safeLoad=()=>{try{const str=localStorage.getItem(SAVE_KEY);return str?JSON.parse(str):null}catch(e){return null}};
+ const save=()=>{try{localStorage.setItem(SAVE_KEY,JSON.stringify(state))}catch(e){/* modo privado ou armazenamento indisponível */}};
+ const fromStore=safeLoad();
+ if(fromStore && fromStore.fases && fromStore.timer){
+  for(const equipe of equipes){state.fases[equipe.id]=inRange(Number(fromStore.fases[equipe.id])||0,0,5)}
+  const old=fromStore.timer;
+  state.timer.remainingMs=inRange(Number(old.remainingMs)||0,0,24*60*60*1000);
+  state.timer.endAt=Number.isFinite(old.endAt)?old.endAt:null;
+  state.timer.running=Boolean(old.running&&state.timer.endAt);
+ }
+ // Cronômetro por relógio absoluto: a aba pode ficar em segundo plano sem perder segundos.
+ function getRemaining(){return state.timer.running?Math.max(0,state.timer.endAt-Date.now()):state.timer.remainingMs}
+ function fmt(ms){const sec=Math.ceil(ms/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`}
+ function tell(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastHandle);toastHandle=setTimeout(()=>el.classList.remove('show'),2400)}
+ function renderSummary(){
+  $('total-equipes').textContent=String(equipes.length).padStart(2,'0');
+  $('em-atividade').textContent=String(equipes.filter(e=>state.fases[e.id]>0&&state.fases[e.id]<5).length).padStart(2,'0');
+  $('concluidas').textContent=String(equipes.filter(e=>state.fases[e.id]===5).length).padStart(2,'0');
+ }
+ function renderCard(equipe){
+  const card=$(`card-${equipe.id}`),fase=state.fases[equipe.id];
+  card.dataset.fase=String(fase);
+  card.querySelector('.status').textContent=statuses[fase];
+  card.querySelector('.stage-tag').textContent=fase===0?'AGUARDANDO INÍCIO':fase===5?'PROTOCOLO VALIDADO':'FASE EM EXECUÇÃO';
+  card.querySelector('.stage-no').innerHTML=fase===0?'—<span> / 04</span>':fase===5?'04<span> / 04</span>':`${String(fase).padStart(2,'0')}<span> / 04</span>`;
+  card.querySelectorAll('.stage-step').forEach((el,i)=>{
+   el.classList.toggle('completed',fase===5 || i<fase-1);
+   el.classList.toggle('current',fase<5 && fase>0 && i===fase-1);
+  });
+  card.setAttribute('aria-label',`Team ${equipe.nome}. ${statuses[fase]}. Clique para avançar. Shift e clique para voltar.`);
+ }
+ function renderTeams(){for(const e of equipes)renderCard(e);renderSummary()}
+ function setPhase(id,step){const previous=state.fases[id];const next=inRange(previous+step,0,5);if(next===previous)return;state.fases[id]=next;renderCard(equipes.find(e=>e.id===id));renderSummary();save();if(next===5)tell('MISSÃO CONCLUÍDA · PATENTE DEPOSITADA!')}
+ function buildCards(){
+  const grid=$('grid-equipes');
+  for(let i=0;i<equipes.length;i++){
+   const e=equipes[i];const card=document.createElement('button');card.type='button';card.className='team-card';card.id=`card-${e.id}`;card.style.setProperty('--team',e.cor);
+   card.innerHTML=`<div class="card-top"><span class="division">DIVISÃO ${String(i+1).padStart(2,'0')}</span><span class="terminal-id">NODE / ${String(i+1).padStart(2,'0')}</span></div>
+    <div class="team-identity"><div class="team-icon" aria-hidden="true">${e.sigla}</div><div class="team-name"><span class="team-prefix">TEAM</span>${e.nome}</div></div>
+    <div class="card-spacer"></div><div class="stage-head"><span class="stage-tag"></span><span class="stage-no"></span></div>
+    <div class="stage-steps" aria-hidden="true"><span class="stage-step"></span><span class="stage-step"></span><span class="stage-step"></span><span class="stage-step"></span></div>
+    <div class="card-bottom"><span class="status"></span><span class="status-dot" aria-hidden="true"></span></div>`;
+   card.addEventListener('click',ev=>setPhase(e.id,ev.shiftKey?-1:1));
+   card.addEventListener('contextmenu',ev=>{ev.preventDefault();setPhase(e.id,-1)});
+   grid.appendChild(card);
+  }
+  renderTeams();
+ }
+ function renderTimer(){
+  let remaining=getRemaining();
+  if(state.timer.running && remaining<=0){
+   state.timer.running=false;state.timer.endAt=null;state.timer.remainingMs=0;remaining=0;save();tell('TEMPO ESGOTADO · PROTOCOLO ENCERRADO');
+  }
+  const output=$('display-timer');output.textContent=fmt(remaining);
+  output.classList.toggle('urgent',remaining<=10*60*1000);
+  output.classList.toggle('warning',remaining>10*60*1000&&remaining<=20*60*1000);
+  const timerState=$('clock-state');
+  timerState.classList.toggle('running',state.timer.running);
+  timerState.classList.toggle('ended',remaining===0);
+  timerState.innerHTML=`<span class="tiny-dot"></span>${remaining===0?'TEMPO ESGOTADO':state.timer.running?'CRONÔMETRO EM EXECUÇÃO':remaining===TOTAL_MS?'PRONTO PARA INICIAR':'CRONÔMETRO PAUSADO'}`;
+  $('timer-action').textContent=state.timer.running?'PAUSAR':remaining===0?'REINICIAR':'INICIAR';
+  $('timer-icon').innerHTML=state.timer.running?'<rect x="7" y="5" width="4" height="14"/><rect x="15" y="5" width="4" height="14"/>':'<path d="m8 5 11 7-11 7z"/>';
+ }
+ function pauseOrStart(){
+  if(state.timer.running){state.timer.remainingMs=getRemaining();state.timer.running=false;state.timer.endAt=null}
+  else{if(state.timer.remainingMs<=0)state.timer.remainingMs=TOTAL_MS;state.timer.endAt=Date.now()+state.timer.remainingMs;state.timer.running=true}
+  save();renderTimer();
+ }
+ function offsetTime(minutes){const adjusted=inRange(getRemaining()+minutes*60*1000,0,24*60*60*1000);state.timer.remainingMs=adjusted;
+  if(adjusted===0){state.timer.running=false;state.timer.endAt=null}
+  else if(state.timer.running)state.timer.endAt=Date.now()+adjusted;
+  save();renderTimer();tell(`${minutes>0?'+':''}${minutes} MIN · TEMPO AJUSTADO`);
+ }
+ function tick(){renderTimer()}
+ function setupControls(){
+  $('timer-toggle').addEventListener('click',pauseOrStart);
+  $('minus-five').addEventListener('click',()=>offsetTime(-5));
+  $('plus-five').addEventListener('click',()=>offsetTime(5));
+  $('fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch(e){tell('Use F11 para ativar a tela cheia no navegador')}});
+  const dialog=$('reset-dialog');const openReset=()=>{dialog.hidden=false;$('cancel-reset').focus()};const closeReset=()=>{dialog.hidden=true;$('reset-progress').focus()};
+  $('reset-progress').addEventListener('click',openReset);
+  $('cancel-reset').addEventListener('click',closeReset);
+  dialog.addEventListener('click',ev=>{if(ev.target===dialog)closeReset()});
+  $('confirm-reset').addEventListener('click',()=>{state=defaultState();save();renderTeams();renderTimer();closeReset();tell('PAINEL REINICIADO · PRONTO PARA UMA NOVA MISSÃO')});
+  document.addEventListener('keydown',e=>{
+   if(e.key==='Escape'&&!dialog.hidden){e.preventDefault();closeReset();return}
+   if(!dialog.hidden)return;
+   if(e.code==='Space'&&!e.repeat && !(e.target instanceof HTMLButtonElement)){e.preventDefault();pauseOrStart()}
+  });
+ }
+ // A logo personalizada é opcional: sem logo.png, a marca vetorial local aparece.
+ const logo=$('custom-logo');
+ logo.addEventListener('load',()=>{$('brand').classList.add('has-custom-logo')});
+ logo.addEventListener('error',()=>{$('brand').classList.remove('has-custom-logo')});
+ if(logo.complete && logo.naturalWidth>0)$('brand').classList.add('has-custom-logo');
+ buildCards();setupControls();renderTimer();
+ timerHandle=setInterval(tick,250);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderTimer()});
+ window.addEventListener('beforeunload',save);
+})();
+</script>
 </body>
 </html>

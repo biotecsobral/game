@@ -1,23 +1,37 @@
-PATENT DNA — OPERAÇÃO RESGATE (visual reformulado)
+PATENT DNA - CENTRAL DE OPERAÇÕES
+================================
 
-ARQUIVOS
-- index.html: nova interface do jogo
-- banco_de_dados.json: banco de dados original, sem alterações
+O arquivo dashboard.html substitui o painel antigo. Foi feito para projetores e TVs em 16:9.
 
-COMO INSTALAR NO GITHUB
-1. Abra o repositório que hospeda o jogo.
-2. Substitua o arquivo index.html pelo index.html deste pacote.
-3. Mantenha o arquivo banco_de_dados.json na mesma pasta do index.html (pode enviar este do pacote se necessário).
-4. Publique via GitHub Pages e atualize a página no navegador.
+COMO USAR
+1. Abra dashboard.html em um navegador (Chrome/Edge). Não precisa de internet.
+2. Clique em INICIAR para começar o cronômetro de 60 minutos.
+3. Quando uma equipe INICIAR a fase 1, clique uma vez em seu cartão.
+   Clique outra vez a cada mudança de fase. No quinto clique, a equipe
+   aparece como "Patente depositada!".
+4. Para voltar uma fase, segure Shift e clique na equipe (ou clique direito).
+5. Use TELA CHEIA para projetar sem elementos do navegador.
+6. Use +5 MIN e -5 MIN para ajustar o tempo, caso necessário.
+7. ZERAR PAINEL redefine as equipes e o cronômetro, após confirmação.
 
-Se houver um arquivo logo.png na pasta, a interface exibe a logo original automaticamente. Caso não exista, exibe o símbolo e nome PATENT DNA.
+IMPORTANTE SOBRE O MONITORAMENTO
+- As etapas são atualizadas MANUALMENTE pela coordenação neste dashboard.
+- O dashboard NÃO recebe automaticamente as respostas dos celulares dos alunos.
+  Para monitoramento remoto realmente automático, seria necessário conectar
+  o site dos alunos e o painel a um banco de dados compartilhado em tempo real.
+- O estado das equipes e o cronômetro ficam salvos no navegador do computador
+  em que o dashboard é usado. Não apague os dados do site no navegador durante
+  a atividade nem use janela anônima se quiser conservar esse progresso.
+- Se o navegador for fechado com o cronômetro em execução, o tempo segue
+  contando de acordo com o relógio do computador quando a página for reaberta.
 
-O jogo continua usando as mesmas equipes, quatro desafios e respostas do JSON.
-A seleção da equipe inicia um cronômetro visual de 60 minutos, que não impede responder após 00:00.
-O botão REINICIAR MISSÃO limpa o progresso da sessão atual.
+LOGO
+- Se quiser mostrar a logo original, ponha logo.png na mesma pasta
+  de dashboard.html. Sem o arquivo, aparece a marca PATENT DNA embutida.
 
-OBSERVAÇÕES
-- O jogo depende de carregar o arquivo JSON com fetch(), portanto pode falhar se aberto com duplo clique (file://); use servidor local ou GitHub Pages.
-- O visual usa fontes da Google Fonts com fontes alternativas quando estiver offline.
-- Este site é uma simulação educacional e não representa um serviço oficial do INPI.
-- As respostas continuam visíveis a quem acessar diretamente o JSON no navegador, como já acontecia na versão original. Para prevenção real de consulta às respostas, é necessário validar num servidor/backend.
+GITHUB
+- Suba dashboard.html para a raiz do repositório (ao lado de index.html).
+- Acesse https://SEU-USUARIO.github.io/SEU-REPOSITORIO/dashboard.html
+- Ele preserva o funcionamento do jogo dos alunos no index.html.
+
+Os nomes das dez equipes correspondem ao banco_de_dados.json do jogo.
